@@ -69,6 +69,7 @@ TODO(tdial): Document the build environment/setup.
   * libmpc-dev
   * libisl-dev
   * libcloog-isl-dev
+  * ncurses-dev
   
 * Download Source
   * **binutils** - https://ftp.gnu.org/gnu/binutils/binutils-2.30.tar.gz

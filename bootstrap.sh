@@ -16,7 +16,11 @@ BINUTILS_SRC_URI="https://ftp.gnu.org/gnu/binutils/binutils-2.30.tar.gz"
 
 # The URI to use to download the gcc source.
 # Note: ensure that this is compatible with the binutils version.
-GCC_SRC_URI="https://ftp.gnu.org/gnu/gcc/gcc-4.7.3/gcc-4.7.3.tar.gz"
+GCC_SRC_URI="https://ftp.gnu.org/gnu/gcc/gcc-7.3.0/gcc-7.3.0.tar.gz"
+
+# We unfortunately have to build TexInfo because binutils/gcc won't
+# build with the system version.
+TEXINFO_SRC_URI="https://ftp.gnu.org/gnu/texinfo/texinfo-4.13.tar.gz"
 
 # The root to use for downloading the cross-compilation build setup.
 XC_ROOT="xc"
@@ -43,8 +47,9 @@ function setup_xc {
 	# somewhere.
 	# TODO(tdial): Make it possible to install globally.
 	export PREFIX="$HOME/opt/cross"
+	export TEXINFO_PREFIX="$HOME/opt/texinfo"
 	export TARGET=i686-elf
-	export PATH="$PREFIX/bin:$PATH"
+	export PATH="$PREFIX/bin:$TEXINFO_PREFIX/bin:$PATH"
 }
 
 
@@ -53,9 +58,6 @@ function setup_xc {
 # the actions necessary to ensure that the target task is complete.
 
 function get_binutils {
-	# If this function is to run independently, we must have the src dir.
-	setup_xc
-
 	# We force wget to download to this version-independent filename.
   BINUTILS_TGZ="${XC_SRC_ROOT}/binutils.tar.gz"
 
@@ -81,15 +83,38 @@ function get_binutils {
 }
 
 
+function get_texinfo {
+	# We force wget to download to this version-independent filename.
+  TEXINFO_TGZ="${XC_SRC_ROOT}/texinfo.tar.gz"
+
+	# We'll force gzip to untar/gzip to this version-independent directory.
+  TEXINFO_DIR="${XC_SRC_ROOT}/texinfo"
+  
+	if [ ! -d "${TEXINFO_DIR}" ]; then
+	  echo "$0: creating directory for texinfo extraction"
+		mkdir -p "${TEXINFO_DIR}"
+  fi
+
+	# Get the texinfo tarball unless we have it already.
+	if [ ! -f "${TEXINFO_TGZ}" ]; then
+		echo "$0: downloading texinfo from ${TEXINFO_SRC_URI}"
+    wget "${TEXINFO_SRC_URI}" -O "${TEXINFO_TGZ}"
+	fi
+
+	# Unzip / untar unless we've already done so (we use md5.sum as an indicator)
+	if [ ! -f "${TEXINFO_DIR}/md5.sum" ]; then
+		echo "$0: extracting texinfo into target directory"
+	  tar -xzf "${TEXINFO_TGZ}" -C "${TEXINFO_DIR}" --strip-components 1
+  fi
+}
+
+
 # Helper function to download, extract gcc.
 # Note: this can be re-run multiple times if it fails; it will only take
 # the actions necessary to ensure that the target task is complete.
 # TODO(tdial): This is cut & paste from the binutils function. Refactor.
 
 function get_gcc {
-	# If this function is to run independently, we must have the src dir.
-	setup_xc
-
 	# We force wget to download to this version-independent filename.
   GCC_TGZ="${XC_SRC_ROOT}/gcc.tar.gz"
 
@@ -119,7 +144,7 @@ function make_binutils {
 	# Save current working directory
 	pushd `pwd`
 	
-	# TODO(tdial): This script assumes the get_binutils has succeeded.
+	# TODO(tdial): This script assumes that get_binutils has succeeded.
 	
 	# Create directory to hold the build target.
 	BUILD_TARGET="${XC_ROOT}/targets/binutils"
@@ -138,7 +163,82 @@ function make_binutils {
 	popd
 }
 
-# "main"
+
+function make_gcc {
+	pushd `pwd`
+
+	# TODO(tdial): This script assumes that make_binutils has succeeded.
+
+	# Create directory to hold the build target.
+	BUILD_TARGET="${XC_ROOT}/targets/gcc"
+	mkdir -p "${BUILD_TARGET}"
+
+	# TODO(tdial): Check that binutils directory has the assembler.
+	which -- $TARGET-as || echo "$TARGET-as is not in the path"
+
+	cd "${BUILD_TARGET}"
+	../../src/gcc/configure --target=$TARGET --prefix="$PREFIX" \
+		--disable-nls --enable-languages=c,c++ --without-headers
+ 
+	make -j4
+	make install
+
+	#make -j4 all-gcc
+	#make -j4 all-target-libgcc
+
+	#make install-host
+	#make install-target-libgcc
+
+	popd
+}
+
+
+function make_texinfo {
+	pushd `pwd`
+
+	# TODO(tdial): This script assumes that get_texinfo has succeeded.
+
+	# Create directory to hold the build target.
+	BUILD_TARGET="${XC_ROOT}/targets/texinfo"
+	mkdir -p "${BUILD_TARGET}"
+
+	# Configure
+	cd "${BUILD_TARGET}"
+	../../src/texinfo/configure --prefix="$TEXINFO_PREFIX"
+ 
+	make -j4 
+	make install
+
+	popd
+}
+
+
+function post_build_message {
+	echo ""
+  echo "Cross compilation environment build complete."
+	echo "You must add the cross compiler to the path to use it:"
+	echo ""
+	echo " export PATH=$PREFIX/bin:\$PATH"
+	echo ""
+	echo "Then ensure it works by running:"
+	echo ""
+	echo " $TARGET-gcc --version"
+	echo ""
+}
+
+#
+# Main
+#
+
+setup_xc
+
+#get_texinfo
+#make_texinfo
+
 get_binutils
 get_gcc
+
 make_binutils
+make_gcc
+
+post_build_message
