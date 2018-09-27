@@ -23,10 +23,19 @@ XC_ROOT="xc"
 
 
 #
-# Dependent Variables: These depend on config vars. above. Don't change.
+# Do common setup for installing the cross compilation environment.
 #
 
-XC_SRC_ROOT="${XC_ROOT}/src"
+function setup_xc {
+	# Which directory are we putting the source?
+  XC_SRC_ROOT="${XC_ROOT}/src"
+
+  # Maybe create the directory to hold the cross compiler source.
+	if [ ! -d "${XC_SRC_ROOT}" ]; then
+    echo "$0: creating directory for cross compiler source: ${XC_SRC_ROOT}"
+	  mkdir -p "${XC_SRC_ROOT}"
+  fi
+}
 
 
 # Helper function to download, extract binutils.
@@ -34,11 +43,8 @@ XC_SRC_ROOT="${XC_ROOT}/src"
 # the actions necessary to ensure that the target task is complete.
 
 function get_binutils {
-  # Maybe a directory to hold the tar/gzip source.
-	if [ ! -d "${XC_SRC_ROOT}" ]; then
-    echo "$0: creating directory for binutils source: ${XC_SRC_ROOT}"
-	  mkdir -p "${XC_SRC_ROOT}"
-  fi
+	# If this function is to run independently, we must have the src dir.
+	setup_xc
 
 	# We force wget to download to this version-independent filename.
   BINUTILS_TGZ="${XC_SRC_ROOT}/binutils.tar.gz"
@@ -64,6 +70,41 @@ function get_binutils {
   fi
 }
 
+
+# Helper function to download, extract gcc.
+# Note: this can be re-run multiple times if it fails; it will only take
+# the actions necessary to ensure that the target task is complete.
+# TODO(tdial): This is cut & paste from the binutils function. Refactor.
+
+function get_gcc {
+	# If this function is to run independently, we must have the src dir.
+	setup_xc
+
+	# We force wget to download to this version-independent filename.
+  GCC_TGZ="${XC_SRC_ROOT}/gcc.tar.gz"
+
+	# We'll force gzip to untar/gzip to this version-independent directory.
+  GCC_DIR="${XC_SRC_ROOT}/gcc"
+  
+	if [ ! -d "${GCC_DIR}" ]; then
+	  echo "$0: creating directory for gcc extraction"
+		mkdir -p "${GCC_DIR}"
+  fi
+
+	# Get the gcc tarball unless we have it already.
+	if [ ! -f "${GCC_TGZ}" ]; then
+		echo "$0: downloading gcc from ${GCC_SRC_URI}"
+    wget "${GCC_SRC_URI}" -O "${GCC_TGZ}"
+	fi
+
+	# Unzip / untar unless we've already done so (we use MD5SUMS as an indicator)
+	if [ ! -f "${GCC_DIR}/MD5SUMS" ]; then
+		echo "$0: extracting gcc into target directory"
+	  tar -xzf "${GCC_TGZ}" -C "${GCC_DIR}" --strip-components 1
+  fi
+}
+
+
 # "main"
 get_binutils
-
+get_gcc
