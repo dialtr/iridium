@@ -35,6 +35,16 @@ function setup_xc {
     echo "$0: creating directory for cross compiler source: ${XC_SRC_ROOT}"
 	  mkdir -p "${XC_SRC_ROOT}"
   fi
+
+	# Note: this will install the cross compiler for each user. This is
+	# probably what we really want. The only time that this would not be
+	# appropriate was for systems where a large number of people were
+	# using the toolchain. In that case, it should be put into a /opt
+	# somewhere.
+	# TODO(tdial): Make it possible to install globally.
+	export PREFIX="$HOME/opt/cross"
+	export TARGET=i686-elf
+	export PATH="$PREFIX/bin:$PATH"
 }
 
 
@@ -105,6 +115,30 @@ function get_gcc {
 }
 
 
+function make_binutils {
+	# Save current working directory
+	pushd `pwd`
+	
+	# TODO(tdial): This script assumes the get_binutils has succeeded.
+	
+	# Create directory to hold the build target.
+	BUILD_TARGET="${XC_ROOT}/targets/binutils"
+	mkdir -p "${BUILD_TARGET}"
+	cd "${BUILD_TARGET}"
+	
+	# Configure
+	../../src/binutils/configure --target=$TARGET --prefix=$PREFIX \
+		--with-sysroot --disable-nls --disable-werror
+
+	# Build binutils and install it locally.
+  make -j4
+	make install
+
+	# Restore directory
+	popd
+}
+
 # "main"
 get_binutils
 get_gcc
+make_binutils
