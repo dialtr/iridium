@@ -45,6 +45,28 @@ interested me personally.
 ## Building
 
 TODO(tdial): Document the build environment/setup.
+
+* Ubuntu 18.04 (And possibly 16.04)
+  * build-essential
+  * binutils
+  * bison
+  * make
+  * flex
+  * libgmp3-dev
+  * libmpfr-dev
+  * texinfo
+  * libmpc-dev
+  * libisl-dev
+  * libcloog-isl-dev
+  
+* Download Source
+  * **binutils** - https://ftp.gnu.org/gnu/binutils/binutils-2.30.tar.gz
+  * **gcc** - https://ftp.gnu.org/gnu/gcc/gcc-4.7.3/gcc-4.7.3.tar.gz
+  
+  
+* Setup Cross Compilation Environment
+  * https://wiki.osdev.org/GCC_Cross-Compiler
+  
 TODO(tdial): Document the build process.
 
 ## Author
