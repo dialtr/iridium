@@ -76,10 +76,10 @@ TODO(tdial): Document the build environment/setup.
   * **gcc** - https://ftp.gnu.org/gnu/gcc/gcc-4.7.3/gcc-4.7.3.tar.gz
 
 ## Resources
-  
-* Setup Cross Compilation Environment
-  * https://wiki.osdev.org/GCC_Cross-Compiler
-  
+
+* https://wiki.osdev.org/GCC_Cross-Compiler
+* https://wiki.osdev.org/Bare_Bones
+
 TODO(tdial): Document the build process.
 
 ## Author
