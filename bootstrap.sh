@@ -25,6 +25,8 @@ TEXINFO_SRC_URI="https://ftp.gnu.org/gnu/texinfo/texinfo-4.13.tar.gz"
 # The root to use for downloading the cross-compilation build setup.
 XC_ROOT="xc"
 
+# Concurrency value for make
+CONCURRENCY=`cat /proc/cpuinfo | grep processor | wc -l`
 
 #
 # Do common setup for installing the cross compilation environment.
@@ -156,7 +158,7 @@ function make_binutils {
 		--with-sysroot --disable-nls --disable-werror
 
 	# Build binutils and install it locally.
-  make -j4
+  make -j$CONCURRENCY
 	make install
 
 	# Restore directory
@@ -180,10 +182,10 @@ function make_gcc {
 	../../src/gcc/configure --target=$TARGET --prefix="$PREFIX" \
 		--disable-nls --enable-languages=c,c++ --without-headers
  
-	make -j4
+	make -j$CONCURRENCY
 	make install
 
-	#make -j4 all-gcc
+	#make -j$CONCURRENCY all-gcc
 	#make -j4 all-target-libgcc
 
 	#make install-host
