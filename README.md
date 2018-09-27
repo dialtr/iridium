@@ -28,21 +28,32 @@ interested me personally.
 
 ## Project Milestones
 
-1. **First Boot** - A multiboot-compliant image of the system can boot
+1. **Cross Compiler** - Completed work on a bootstrap script that is
+   able to fetch the necessary sources from the internet to build an
+   appropriate cross compiler. The milestone version will be tested on
+   Ubuntu 18.04.
+
+2. **First Boot** - A multiboot-compliant image of the system can boot
    from GRUB. Control transfers from the boot loader to an entry point
    written in the C programming language, and "Hello, Iridium!" is
    displayed in the terminal prior to halting.
    
-2. **VGA Display Routines** - A set of routines for performing basic
+3. **VGA Display Routines** - A set of routines for performing basic
    character output on the screen using color mode VGA. The hello
    message will be displayed in color.
    
-3. **Basic Keyboard Support** - The system supports basic keyboard
+4. **Basic Keyboard Support** - The system supports basic keyboard
    input. Pressing alphanumeric keys will result in the corresponding
    letters to be displayed on the screen using the VGA routines
    developed for the second milestone.
-   
-## Building
+
+## Pending Tasks
+
+* HIGH - Test whether the bootstrap script works on Ubuntu 18.04
+* LOW - Test whether the bootstrap script works on Debian
+* LOW - Test whether the bootstrap script works on Ubuntu 16.04
+
+## Package Dependencies
 
 TODO(tdial): Document the build environment/setup.
 
@@ -62,7 +73,8 @@ TODO(tdial): Document the build environment/setup.
 * Download Source
   * **binutils** - https://ftp.gnu.org/gnu/binutils/binutils-2.30.tar.gz
   * **gcc** - https://ftp.gnu.org/gnu/gcc/gcc-4.7.3/gcc-4.7.3.tar.gz
-  
+
+## Resources
   
 * Setup Cross Compilation Environment
   * https://wiki.osdev.org/GCC_Cross-Compiler
