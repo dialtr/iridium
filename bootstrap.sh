@@ -32,6 +32,7 @@ CONCURRENCY=`cat /proc/cpuinfo | grep processor | wc -l`
 # Do common setup for installing the cross compilation environment.
 #
 
+
 function setup_xc {
 	# Which directory are we putting the source?
   XC_SRC_ROOT="${XC_ROOT}/src"
@@ -52,6 +53,13 @@ function setup_xc {
 	export TEXINFO_PREFIX="$HOME/opt/texinfo"
 	export TARGET=i686-elf
 	export PATH="$PREFIX/bin:$TEXINFO_PREFIX/bin:$PATH"
+}
+
+
+function install_debian_packages {
+  sudo apt-get install -y build-essential binutils bison make flex \
+		libgmp3-dev libmpfr-dev texinfo libmpc-dev libisl-dev          \
+		libcloog-isl-dev ncurses-dev
 }
 
 
@@ -233,6 +241,7 @@ function post_build_message {
 #
 
 setup_xc
+install_debian_packages
 
 #get_texinfo
 #make_texinfo
