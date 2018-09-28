@@ -25,10 +25,13 @@ TEXINFO_SRC_URI="https://ftp.gnu.org/gnu/texinfo/texinfo-4.13.tar.gz"
 # The root to use for downloading the cross-compilation build setup.
 XC_ROOT="xc"
 
+# Concurrency value for make
+CONCURRENCY=`cat /proc/cpuinfo | grep processor | wc -l`
 
 #
 # Do common setup for installing the cross compilation environment.
 #
+
 
 function setup_xc {
 	# Which directory are we putting the source?
@@ -50,6 +53,13 @@ function setup_xc {
 	export TEXINFO_PREFIX="$HOME/opt/texinfo"
 	export TARGET=i686-elf
 	export PATH="$PREFIX/bin:$TEXINFO_PREFIX/bin:$PATH"
+}
+
+
+function install_debian_packages {
+  sudo apt-get install -y build-essential binutils bison make flex \
+		libgmp3-dev libmpfr-dev texinfo libmpc-dev libisl-dev          \
+		libcloog-isl-dev ncurses-dev
 }
 
 
@@ -156,7 +166,7 @@ function make_binutils {
 		--with-sysroot --disable-nls --disable-werror
 
 	# Build binutils and install it locally.
-  make -j4
+  make -j$CONCURRENCY
 	make install
 
 	# Restore directory
@@ -180,10 +190,10 @@ function make_gcc {
 	../../src/gcc/configure --target=$TARGET --prefix="$PREFIX" \
 		--disable-nls --enable-languages=c,c++ --without-headers
  
-	make -j4
+	make -j$CONCURRENCY
 	make install
 
-	#make -j4 all-gcc
+	#make -j$CONCURRENCY all-gcc
 	#make -j4 all-target-libgcc
 
 	#make install-host
@@ -231,6 +241,7 @@ function post_build_message {
 #
 
 setup_xc
+install_debian_packages
 
 #get_texinfo
 #make_texinfo
