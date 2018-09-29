@@ -5,3 +5,6 @@
 # the bootstrap.sh script. The files that are are required by the
 # bootstrap process are too large to "vendor in".
 xc/
+
+# Ignore object files
+*.o
