@@ -19,7 +19,6 @@ iridium.iso: iridium.bin grub.cfg
 	cp grub.cfg isodir/boot/grub/grub.cfg
 	grub-mkrescue -o iridium.iso isodir
 
-.PHONY:
 iso: iridium.iso
 
 iridium.bin: boot.o kernel_main.o
@@ -35,4 +34,4 @@ kernel_main: kernel_main.c
 
 .PHONY:
 clean:
-	-rm -f *.o *.bin
+	-rm -f *.o *.bin *.iso
