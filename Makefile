@@ -21,17 +21,17 @@ iridium.iso: iridium.bin grub.cfg
 
 iso: iridium.iso
 
-iridium.bin: boot.o kernel_main.o
+iridium.bin: boot.o kernel_main.o vga.o
 	$(CC) -T linker.ld -o iridium.bin -ffreestanding -O2 -nostdlib boot.o \
-		kernel_main.o -lgcc
+		kernel_main.o vga.o -lgcc
 	grub-file --is-x86-multiboot iridium.bin
 
 boot.o: boot.s
 	$(AS) $^ -o boot.o
 
-kernel_main: kernel_main.c
-	$(CC) $(CFLAGS) -c $^
-
 .PHONY:
 clean:
 	-rm -f *.o *.bin *.iso
+
+.cc.o:
+	$(CC) $(CFLAGS) -x $<
