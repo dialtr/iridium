@@ -33,5 +33,9 @@ boot.o: boot.s
 clean:
 	-rm -f *.o *.bin *.iso
 
+.PHONY:
+reformat:
+	clang-format -style=Google -i *.h *.c
+
 .cc.o:
 	$(CC) $(CFLAGS) -x $<
