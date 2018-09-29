@@ -1,6 +1,9 @@
 # Ignore IntelliJ IDEA directory (In case you use it as an editor)
 .idea/
 
+# Ignore isodir directory; it's created by the build
+isodir/
+
 # Ignore the cross compilation environment directory. This is built by
 # the bootstrap.sh script. The files that are are required by the
 # bootstrap process are too large to "vendor in".
@@ -9,5 +12,6 @@ xc/
 # Ignore object files
 *.o
 
-# Ignore target
+# Ignore targets
 *.bin
+*.iso

@@ -59,7 +59,7 @@ function setup_xc {
 function install_debian_packages {
   sudo apt-get install -y build-essential binutils bison make flex \
 		libgmp3-dev libmpfr-dev texinfo libmpc-dev libisl-dev          \
-		libcloog-isl-dev ncurses-dev lib32stdc++-7-dev
+		libcloog-isl-dev ncurses-dev lib32stdc++-7-dev xorriso
 }
 
 
