@@ -1,6 +1,9 @@
 # Ignore IntelliJ IDEA directory (In case you use it as an editor)
 .idea/
 
+# Ignore Vi editor temp/swap files.
+*.swp
+
 # Ignore isodir directory; it's created by the build
 isodir/
 
