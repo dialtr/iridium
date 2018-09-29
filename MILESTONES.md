@@ -1,5 +1,12 @@
 # Milestone Journal
 
+* 2018-09-29 T 17:01:00
+
+  VGA display driver complete. Supports drawing filled rectangles with a
+  selected fill character and foreground, background color attribute.
+  This was required to implement the vga_clear() routine. Next steps are
+  to write a few support routines for drawing text strings.
+
 * 2018-09-29 T 02:38:00
 
   ISO target now builds. Tested with QEMU and it seems to boot!
