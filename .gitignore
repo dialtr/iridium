@@ -8,3 +8,6 @@ xc/
 
 # Ignore object files
 *.o
+
+# Ignore target
+*.bin
