@@ -5,7 +5,7 @@ AS=i686-elf-as
 CC=i686-elf-gcc
 LD=i686-elf-ld
 
-CFLAGS=-std=gnu99 -ffreestanding -O2 -Wall -Wextra
+CFLAGS=-std=gnu99 -ffreestanding -O2 -Wall -Wextra -Werror
 
 .PHONY:
 all: iridium

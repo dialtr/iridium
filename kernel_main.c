@@ -22,12 +22,14 @@ void kernel_main(void) {
   // Initialize the VGA driver.
   vga_init();
 
-  // We'll fill the screen with the medium shaded block element character
-  // from Code Page 737, using a foreground color of light grey and a
-  // background color of black.
-  const unsigned char MEDIUM_SHADED_BLOCK_CHAR = 177;
+  const uint8_t SPACE = ' ';
 
   // Fill the entire screen with the shaded character.
-  vga_fill_rect(0, 0, VGA_WIDTH, VGA_HEIGHT, MEDIUM_SHADED_BLOCK_CHAR,
-                VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+  vga_fill_rect(0, 0, VGA_WIDTH, VGA_HEIGHT, SPACE, VGA_COLOR_WHITE,
+                VGA_COLOR_BLUE);
+
+  const uint8_t message[] = "Hello, Iridium!";
+
+  vga_draw_text(0, 24, message, sizeof(message) / sizeof(uint8_t),
+                VGA_COLOR_WHITE, VGA_COLOR_BLUE);
 }
