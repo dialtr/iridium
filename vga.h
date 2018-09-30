@@ -11,7 +11,10 @@
 #include <stdint.h>
 
 // The screen dimensions in standard VGA mode.
-enum { VGA_WIDTH = 80, VGA_HEIGHT = 25 };
+enum {
+  VGA_WIDTH = 80,  // The width of the screen in characters.
+  VGA_HEIGHT = 25  // The height of the screen in characters.
+};
 
 // VGA color constants.
 enum vga_color {
@@ -34,7 +37,12 @@ enum vga_color {
 };
 
 // VGA error codes
-enum { VGA_SUCCESS = 0, VGA_NOT_INITIALIZED = 1, VGA_INVALID_DIMENSION = 2 };
+enum {
+  VGA_SUCCESS = 0,            // Success.
+  VGA_NOT_INITIALIZED = 1,    // The VGA driver was not initialized.
+  VGA_INVALID_DIMENSION = 2,  // An invalid position / dimension was specified.
+  VGA_INVALID_BUFFER = 3      // The caller's buffer pointer was NULL.
+};
 
 // Status type returned by VGA driver functions.
 typedef int32_t vga_status_t;
@@ -63,6 +71,30 @@ vga_status_t vga_init();
 // background color.
 vga_status_t vga_clear();
 
+// Draw a single character.
+//
+// Returns VGA_SUCCESS on success.
+// Returns VGA_NOT_INITIALIZED if the driver is not initialized.
+// Returns VGA_INVALID_DIMENSION if one or more dimensations are out of range.
+vga_status_t vga_draw_char(size_t x, size_t y, uint8_t cp,
+                           enum vga_color fgcolor, enum vga_color bgcolor);
+
+// Draw a text string.
+//
+// Returns VGA_SUCCESS on success.
+// Returns VGA_NOT_INITIALIZED if the driver is not initialized.
+// Returns VGA_INVALID_DIMENSION if one or more dimensations are out of range.
+//
+// Notes: This function does not assume strings to be null terminated. It is
+// the caller's responsibility to specify the number of characters to be drawn
+// from 'str' by passing the length in 'len'.
+//
+// The function will "wrap" strings to the following line, with the exception
+// that if wrapping would cause the text to lie outside the allowable range of
+// the buffer, it will be truncated. No "scrolling" will occur.
+vga_status_t vga_draw_text(size_t x, size_t y, const uint8_t* str, size_t len,
+                           enum vga_color fgcolor, enum vga_color bgcolor);
+
 // Fill a rectangle in the buffer with the specified code point, attributes.
 //
 // Returns VGA_SUCCESS on success.
@@ -77,7 +109,7 @@ vga_status_t vga_clear();
 // function is invalid; it will either perform the fill as requested or it
 // will return an error without writing to the screen buffer.
 vga_status_t vga_fill_rect(size_t x, size_t y, size_t width, size_t height,
-                           unsigned char cp, enum vga_color fgcolor,
+                           uint8_t cp, enum vga_color fgcolor,
                            enum vga_color bgcolor);
 
 #endif  // VGA_H_INCLUDED
