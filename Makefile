@@ -21,7 +21,7 @@ iridium.iso: iridium.bin grub.cfg
 
 iso: iridium.iso
 
-iridium.bin: boot.o io.o kernel_main.o splash.o vga.o
+iridium.bin: boot.o console.o io.o kernel_main.o splash.o vga.o vga_terminal.o
 	$(CC) -T linker.ld -o iridium.bin -ffreestanding -O2 -nostdlib $^ -lgcc
 	grub-file --is-x86-multiboot iridium.bin
 
