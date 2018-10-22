@@ -147,3 +147,41 @@ vga_status_t vga_fill_rect(size_t x, size_t y, size_t width, size_t height,
 
   return VGA_SUCCESS;
 }
+
+static vga_status_t vga_scroll_up(uint8_t cp, enum vga_color fgcolor,
+                                  enum vga_color bgcolor) {
+  // Make the byte that contains fill color / attributes. It is reused.
+  const uint8_t color_entry = vga_make_color_entry(fgcolor, bgcolor);
+
+  // Make the fill pattern...
+  const uint16_t pattern = vga_make_char_pattern(cp, color_entry);
+
+  // Start from the bottom of the buffer, copying lines up one.
+  for (size_t row = 1; row < VGA_HEIGHT; ++row) {
+    for (size_t col = 0; col < VGA_WIDTH; ++col) {
+      const size_t src_offset = (row * VGA_WIDTH) + col;
+      const size_t dest_offset = ((row - 1) * VGA_WIDTH) + col;
+      vga_screen_buffer[dest_offset] = vga_screen_buffer[src_offset];
+    }
+  }
+
+  // Fill the vacated line with the fill pattern.
+  for (size_t col = 0; col < VGA_WIDTH; ++col) {
+    vga_screen_buffer[((VGA_HEIGHT - 1) * VGA_WIDTH) + col] = pattern;
+  }
+
+  return 0;
+}
+
+// Scroll the screen buffer in the specified direction.
+vga_status_t vga_scroll(int direction, uint8_t cp, enum vga_color fgcolor,
+                        enum vga_color bgcolor) {
+  // Delegate to function that handles specific direction.
+  switch (direction) {
+    case VGA_SCROLL_UP:
+      return vga_scroll_up(cp, fgcolor, bgcolor);
+
+    default:
+      return VGA_NOT_IMPLEMENTED;
+  }
+}

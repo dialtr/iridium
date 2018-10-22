@@ -40,8 +40,17 @@ enum vga_color {
 enum {
   VGA_SUCCESS = 0,            // Success.
   VGA_NOT_INITIALIZED = 1,    // The VGA driver was not initialized.
-  VGA_INVALID_DIMENSION = 2,  // An invalid position / dimension was specified.
-  VGA_INVALID_BUFFER = 3      // The caller's buffer pointer was NULL.
+  VGA_NOT_IMPLEMENTED = 2,    // The function is not implemented.
+  VGA_INVALID_DIMENSION = 3,  // An invalid position / dimension was specified.
+  VGA_INVALID_BUFFER = 4      // The caller's buffer pointer was NULL.
+};
+
+// Scroll directions
+enum {
+  VGA_SCROLL_UP = 0,
+  VGA_SCROLL_DOWN = 1,
+  VGA_SCROLL_LEFT = 2,
+  VGA_SCROLL_RIGHT = 3
 };
 
 // Status type returned by VGA driver functions.
@@ -111,5 +120,17 @@ vga_status_t vga_draw_text(size_t x, size_t y, const uint8_t* str, size_t len,
 vga_status_t vga_fill_rect(size_t x, size_t y, size_t width, size_t height,
                            uint8_t cp, enum vga_color fgcolor,
                            enum vga_color bgcolor);
+
+// Scroll the screen in the specified direction. (See VGA_SCROLL_xx enums.)
+//
+// Returns VGA_SUCCESS on success.
+// Returns VGA_NOT_INITIALIZED if the direction is not supported.
+//
+// Scrolling the screen causes the recently vacated line to be filled with
+// the specified code point, foreground color, and background color.
+//
+// Notes: At the present time, only VGA_SCROLL_UP is supported.
+vga_status_t vga_scroll(int direction, uint8_t cp, enum vga_color fgcolor,
+                        enum vga_color bgcolor);
 
 #endif  // VGA_H_INCLUDED
